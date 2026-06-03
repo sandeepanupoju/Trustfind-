@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustFind – Lost & Found Community</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root{
+  --g1:#00c896;--g2:#00876a;--g3:#005c47;
+  --dark:#0a1628;--mid:#1e3a5f;--text:#e8f4f0;
+  --white:#ffffff;--card:#111d2e;--border:rgba(0,200,150,.18);
+  --shadow:0 20px 60px rgba(0,0,0,.35);
+  --ff-head:'Syne',sans-serif;
+  --ff-body:'DM Sans',sans-serif;
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:var(--ff-body);overflow-x:hidden;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--g1);border-radius:3px;}
+
+/* ── NOISE OVERLAY ──────────────────────────────── */
+body::before{content:'';position:fixed;inset:0;opacity:.03;pointer-events:none;z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;}
+
+/* ── NAVBAR ─────────────────────────────────────── */
+.navbar{
+  position:sticky;top:0;z-index:1000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:18px 7%;
+  background:rgba(10,22,40,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-family:var(--ff-head);font-size:1.7rem;font-weight:800;
+  background:linear-gradient(90deg,var(--g1),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo i{-webkit-text-fill-color:var(--g1);margin-right:8px;}
+.nav-links{display:flex;list-style:none;gap:30px;}
+.nav-links a{text-decoration:none;color:rgba(232,244,240,.7);font-weight:500;font-size:.95rem;
+  transition:.3s;letter-spacing:.3px;}
+.nav-links a:hover{color:var(--g1);}
+.nav-cta{background:var(--g1);color:var(--dark)!important;padding:10px 22px;border-radius:50px;font-weight:700!important;}
+.nav-cta:hover{background:#fff!important;transform:translateY(-2px);}
+
+/* ── HERO ───────────────────────────────────────── */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&auto=format&fit=crop&q=80');
+  background-size:cover;background-position:center;
+  filter:brightness(.25);
+}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 50%,rgba(0,200,150,.15),transparent 60%),
+             linear-gradient(180deg,transparent 40%,var(--dark) 100%);
+}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:860px;padding:40px 20px;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,200,150,.12);border:1px solid var(--border);
+  color:var(--g1);padding:8px 20px;border-radius:50px;font-size:.85rem;font-weight:600;
+  margin-bottom:28px;letter-spacing:.5px;text-transform:uppercase;
+  animation:fadeUp .8s ease both;
+}
+.hero h1{
+  font-family:var(--ff-head);font-size:clamp(2.8rem,7vw,5.2rem);font-weight:800;
+  line-height:1.1;margin-bottom:24px;
+  animation:fadeUp .8s .15s ease both;
+}
+.hero h1 span{background:linear-gradient(90deg,var(--g1),#7fffd4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.2rem;color:rgba(232,244,240,.7);line-height:1.8;max-width:580px;margin:0 auto 40px;
+  animation:fadeUp .8s .3s ease both;}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .45s ease both;}
+.btn-primary{
+  background:var(--g1);color:var(--dark);padding:16px 36px;border-radius:12px;
+  font-weight:700;font-size:1rem;text-decoration:none;font-family:var(--ff-head);
+  transition:.3s;box-shadow:0 0 30px rgba(0,200,150,.4);}
+.btn-primary:hover{background:#fff;transform:translateY(-3px);box-shadow:0 0 50px rgba(0,200,150,.5);}
+.btn-outline{
+  border:1.5px solid rgba(232,244,240,.3);color:var(--text);padding:16px 36px;
+  border-radius:12px;font-weight:600;font-size:1rem;text-decoration:none;
+  transition:.3s;backdrop-filter:blur(10px);background:rgba(255,255,255,.05);}
+.btn-outline:hover{border-color:var(--g1);color:var(--g1);transform:translateY(-3px);}
+
+/* floating stats */
+.hero-stats{
+  position:relative;z-index:2;display:flex;justify-content:center;gap:40px;
+  padding:30px 40px;margin:0 auto;max-width:600px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  backdrop-filter:blur(20px);border-radius:20px;margin-top:50px;
+  animation:fadeUp .8s .6s ease both;flex-wrap:wrap;
+}
+.hero-stat{text-align:center;}
+.hero-stat-num{font-family:var(--ff-head);font-size:2rem;font-weight:800;color:var(--g1);}
+.hero-stat-label{font-size:.8rem;color:rgba(232,244,240,.5);text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── SEARCH ─────────────────────────────────────── */
+.search-section{padding:60px 7%;}
+.search-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:30px;
+  box-shadow:var(--shadow);
+}
+.search-title{font-family:var(--ff-head);font-size:1.3rem;font-weight:700;margin-bottom:20px;color:var(--g1);}
+.search-row{display:flex;gap:14px;flex-wrap:wrap;}
+.search-row input,.search-row select{
+  flex:1;min-width:180px;padding:15px 20px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:var(--ff-body);font-size:.95rem;
+  transition:.3s;outline:none;}
+.search-row input::placeholder{color:rgba(232,244,240,.35);}
+.search-row select option{background:var(--card);color:var(--text);}
+.search-row input:focus,.search-row select:focus{border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,200,150,.15);}
+.search-btn{
+  padding:15px 32px;background:var(--g1);color:var(--dark);
+  border:none;border-radius:12px;cursor:pointer;font-weight:700;
+  font-family:var(--ff-head);font-size:.95rem;transition:.3s;white-space:nowrap;}
+.search-btn:hover{background:#fff;transform:translateY(-2px);}
+
+/* ── ANALYTICS ──────────────────────────────────── */
+.analytics{padding:80px 7%;background:linear-gradient(180deg,var(--dark),var(--mid));}
+.section-head{text-align:center;margin-bottom:60px;}
+.section-label{
+  display:inline-block;color:var(--g1);font-size:.8rem;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;}
+.section-head h2{font-family:var(--ff-head);font-size:clamp(2rem,4vw,3rem);font-weight:800;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-bottom:50px;}
+.stat-card{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:var(--r);padding:40px 30px;text-align:center;
+  transition:.4s;position:relative;overflow:hidden;}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--g1),transparent);}
+.stat-card:hover{background:rgba(0,200,150,.07);transform:translateY(-6px);}
+.stat-card h3{font-family:var(--ff-head);font-size:3.5rem;font-weight:800;color:var(--g1);margin-bottom:8px;}
+.stat-card p{color:rgba(232,244,240,.6);font-size:.95rem;font-weight:500;}
+.testimonial{
+  background:rgba(0,200,150,.06);border:1px solid var(--border);
+  border-radius:var(--r);padding:35px;text-align:center;
+  font-size:1.15rem;line-height:1.8;color:rgba(232,244,240,.85);
+  min-height:80px;transition:opacity .5s;}
+.testimonial::before{content:'"';font-family:var(--ff-head);font-size:5rem;color:var(--g1);opacity:.2;
+  position:absolute;top:-10px;left:30px;}
+.testimonial{position:relative;}
+
+/* ── REPORTS GRID ───────────────────────────────── */
+.reports-section{padding:80px 7%;}
+.report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;}
+.report-card{
+  border-radius:var(--r);overflow:hidden;
+  background:var(--card);border:1px solid var(--border);
+  transition:.4s;cursor:pointer;}
+.report-card:hover{transform:translateY(-10px);box-shadow:0 30px 60px rgba(0,0,0,.4);border-color:rgba(0,200,150,.4);}
+.report-card-img{position:relative;height:230px;overflow:hidden;}
+.report-card-img img{width:100%;height:100%;object-fit:cover;transition:.5s;}
+.report-card:hover .report-card-img img{transform:scale(1.07);}
+.report-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.7));}
+.tag{
+  position:absolute;top:16px;left:16px;z-index:2;
+  padding:7px 16px;border-radius:50px;font-size:.8rem;font-weight:700;
+  font-family:var(--ff-head);letter-spacing:.5px;}
+.tag-lost{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);}
+.tag-found{background:rgba(0,200,150,.15);color:var(--g1);border:1px solid rgba(0,200,150,.3);}
+.report-body{padding:22px;}
+.report-body h3{font-family:var(--ff-head);font-size:1.2rem;margin-bottom:10px;}
+.report-body p{color:rgba(232,244,240,.5);font-size:.9rem;}
+
+/* ── FORM ───────────────────────────────────────── */
+.form-section{padding:80px 7%;background:linear-gradient(180deg,var(--mid),var(--dark));}
+.form-wrap{
+  max-width:860px;margin:auto;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:50px;box-shadow:var(--shadow);}
+.trust-banner{
+  background:linear-gradient(90deg,rgba(0,200,150,.15),rgba(0,200,150,.05));
+  border:1px solid var(--border);border-radius:12px;
+  padding:16px 24px;text-align:center;font-weight:600;
+  color:var(--g1);margin-bottom:36px;letter-spacing:.3px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-grid .full{grid-column:1/-1;}
+.form-field{display:flex;flex-direction:column;gap:8px;}
+.form-field label{font-size:.85rem;font-weight:600;color:rgba(232,244,240,.6);text-transform:uppercase;letter-spacing:.5px;}
+.form-field input,.form-field select,.form-field textarea{
+  padding:15px 18px;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:var(--ff-body);font-size:.95rem;
+  transition:.3s;outline:none;}
+.form-field input::placeholder,.form-field textarea::placeholder{color:rgba(232,244,240,.3);}
+.form-field select option{background:var(--card);}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{
+  border-color:var(--g1);box-shadow:0 0 0 3px rgba(0,200,150,.12);}
+.radio-group{display:flex;gap:20px;padding:4px 0;}
+.radio-group label{
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  padding:12px 20px;border:1.5px solid var(--border);border-radius:10px;
+  transition:.3s;font-weight:500;}
+.radio-group label:has(input:checked){border-color:var(--g1);background:rgba(0,200,150,.08);color:var(--g1);}
+.upload-area{
+  border:2px dashed var(--border);border-radius:14px;padding:35px;
+  text-align:center;cursor:pointer;transition:.3s;background:rgba(0,200,150,.03);}
+.upload-area:hover{border-color:var(--g1);background:rgba(0,200,150,.06);}
+.upload-area i{font-size:2.5rem;color:var(--g1);margin-bottom:12px;display:block;}
+.upload-area p{color:rgba(232,244,240,.5);font-size:.9rem;}
+.upload-area input{display:none;}
+#previewImage{margin-top:20px;width:100%;max-height:300px;object-fit:cover;border-radius:12px;display:none;}
+.submit-btn{
+  width:100%;padding:18px;background:linear-gradient(90deg,var(--g1),var(--g2));
+  color:var(--dark);border:none;border-radius:14px;
+  font-family:var(--ff-head);font-size:1.1rem;font-weight:700;cursor:pointer;
+  transition:.3s;margin-top:8px;letter-spacing:.5px;}
+.submit-btn:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(0,200,150,.3);}
+
+/* ── BOARD ──────────────────────────────────────── */
+.board-section{padding:80px 7%;}
+.filter-bar{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:50px;}
+.filter-btn{
+  padding:11px 26px;border-radius:50px;
+  border:1.5px solid var(--border);background:transparent;
+  color:rgba(232,244,240,.7);cursor:pointer;font-family:var(--ff-body);
+  font-weight:600;font-size:.9rem;transition:.3s;}
+.filter-btn:hover,.filter-btn.active{background:var(--g1);color:var(--dark);border-color:var(--g1);}
+.board-layout{display:grid;grid-template-columns:2fr 1fr;gap:30px;}
+.items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;}
+.item-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;transition:.4s;}
+.item-card:hover{transform:translateY(-8px);border-color:rgba(0,200,150,.35);box-shadow:0 20px 50px rgba(0,0,0,.4);}
+.item-card-img{height:190px;overflow:hidden;position:relative;}
+.item-card-img img{width:100%;height:100%;object-fit:cover;transition:.4s;}
+.item-card:hover .item-card-img img{transform:scale(1.06);}
+.item-body{padding:18px;}
+.item-body h3{font-family:var(--ff-head);font-size:1.05rem;margin:10px 0 6px;}
+.item-body p{color:rgba(232,244,240,.45);font-size:.85rem;margin-bottom:4px;}
+.s-lost{display:inline-block;background:rgba(239,68,68,.12);color:#f87171;
+  padding:5px 14px;border-radius:50px;font-size:.78rem;font-weight:700;border:1px solid rgba(239,68,68,.25);}
+.s-found{display:inline-block;background:rgba(0,200,150,.12);color:var(--g1);
+  padding:5px 14px;border-radius:50px;font-size:.78rem;font-weight:700;border:1px solid rgba(0,200,150,.25);}
+.claim-btn{
+  width:100%;margin-top:14px;padding:11px;border:none;
+  background:rgba(0,200,150,.1);color:var(--g1);border-radius:10px;
+  cursor:pointer;font-weight:700;font-family:var(--ff-body);transition:.3s;
+  border:1px solid rgba(0,200,150,.2);}
+.claim-btn:hover{background:var(--g1);color:var(--dark);}
+.map-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px;position:sticky;top:90px;}
+.map-card h3{font-family:var(--ff-head);font-size:1.1rem;margin-bottom:18px;}
+.map-inner{
+  height:440px;border-radius:12px;overflow:hidden;
+  background:linear-gradient(135deg,#0d2137,#0a3d2e);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;border:1px solid var(--border);}
+.map-inner::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 2px 2px,rgba(0,200,150,.1) 1px,transparent 0);
+  background-size:30px 30px;}
+.map-inner i{font-size:3.5rem;color:var(--g1);margin-bottom:16px;position:relative;z-index:1;}
+.map-inner p{color:rgba(232,244,240,.5);text-align:center;font-size:.9rem;max-width:200px;position:relative;z-index:1;}
+/* map dots */
+.map-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--g1);
+  box-shadow:0 0 12px var(--g1);animation:pulse 2s infinite;}
+.map-dot:nth-child(1){top:30%;left:40%;}
+.map-dot:nth-child(2){top:55%;left:65%;animation-delay:.5s;}
+.map-dot:nth-child(3){top:70%;left:35%;animation-delay:1s;}
+.map-dot:nth-child(4){top:25%;left:70%;animation-delay:1.5s;}
+
+/* ── WHY TRUSTFIND ──────────────────────────────── */
+.why-section{padding:80px 7%;background:linear-gradient(180deg,var(--dark),var(--mid));}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;}
+.why-card{
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:var(--r);padding:40px 30px;transition:.4s;position:relative;overflow:hidden;}
+.why-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--g1),transparent);
+  transform:scaleX(0);transition:.4s;}
+.why-card:hover::after{transform:scaleX(1);}
+.why-card:hover{background:rgba(0,200,150,.05);transform:translateY(-6px);}
+.why-icon{
+  width:58px;height:58px;background:rgba(0,200,150,.1);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:22px;border:1px solid var(--border);}
+.why-icon i{font-size:1.5rem;color:var(--g1);}
+.why-card h3{font-family:var(--ff-head);font-size:1.2rem;margin-bottom:12px;}
+.why-card p{color:rgba(232,244,240,.5);line-height:1.7;font-size:.95rem;}
+
+/* ── FOOTER ─────────────────────────────────────── */
+footer{
+  background:rgba(0,0,0,.5);border-top:1px solid var(--border);
+  padding:60px 7% 30px;text-align:center;}
+.footer-logo{font-family:var(--ff-head);font-size:2rem;font-weight:800;
+  background:linear-gradient(90deg,var(--g1),#7fffd4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:10px;}
+footer p{color:rgba(232,244,240,.4);font-size:.9rem;margin-bottom:6px;}
+.footer-socials{display:flex;gap:18px;justify-content:center;margin:30px 0 20px;}
+.footer-socials a{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.05);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(232,244,240,.5);text-decoration:none;transition:.3s;}
+.footer-socials a:hover{background:var(--g1);color:var(--dark);border-color:var(--g1);}
+.footer-links{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:30px;}
+.footer-links a{color:rgba(232,244,240,.4);text-decoration:none;font-size:.85rem;transition:.3s;}
+.footer-links a:hover{color:var(--g1);}
+.copyright{color:rgba(232,244,240,.25);font-size:.8rem;padding-top:20px;border-top:1px solid rgba(255,255,255,.05);}
+
+/* ── ANIMATIONS ─────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,200,150,.6);}50%{box-shadow:0 0 0 8px rgba(0,200,150,0);}}
+
+/* ── TOAST ──────────────────────────────────────── */
+.toast{
+  position:fixed;bottom:30px;right:30px;z-index:9999;
+  background:var(--g1);color:var(--dark);padding:16px 26px;
+  border-radius:12px;font-weight:700;font-family:var(--ff-head);
+  transform:translateY(100px);opacity:0;transition:.4s;box-shadow:0 10px 30px rgba(0,200,150,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ── RESPONSIVE ─────────────────────────────────── */
+@media(max-width:900px){
+  .board-layout{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-grid .full{grid-column:1;}
+  .hero h1{font-size:2.6rem;}
+}
+@media(max-width:640px){
+  .nav-links{display:none;}
+  .hero h1{font-size:2rem;}
+  .hero-stats{gap:20px;}
+  .form-wrap{padding:28px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="logo"><i class="fa-solid fa-shield-heart"></i>TrustFind</div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#analytics">Analytics</a></li>
+    <li><a href="#reports">Reports</a></li>
+    <li><a href="#board">Board</a></li>
+    <li><a href="#reportForm" class="nav-cta">Report Item</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative;z-index:2;width:100%;text-align:center;padding:20px;">
+    <div class="hero-content" style="margin:auto;">
+      <div class="hero-badge"><i class="fa-solid fa-circle-check"></i> Trusted by 10,000+ community members</div>
+      <h1>Lost Something?<br><span>We'll Help You Find It.</span></h1>
+      <p>Connecting people with their lost belongings through honesty, trust, and the power of community.</p>
+      <div class="hero-buttons">
+        <a href="#reportForm" class="btn-primary"><i class="fa-solid fa-triangle-exclamation" style="margin-right:8px;"></i>Report Lost Item</a>
+        <a href="#reportForm" class="btn-outline"><i class="fa-solid fa-hand-holding-heart" style="margin-right:8px;"></i>Post Found Item</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-num" id="h-reported">1,200</div><div class="hero-stat-label">Reports</div></div>
+        <div class="hero-stat" style="border-left:1px solid rgba(0,200,150,.2);border-right:1px solid rgba(0,200,150,.2);padding:0 40px;">
+          <div class="hero-stat-num" id="h-reunited">980</div><div class="hero-stat-label">Reunited</div>
+        </div>
+        <div class="hero-stat"><div class="hero-stat-num">95%</div><div class="hero-stat-label">Honesty Rating</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<section class="search-section" id="search">
+  <div class="search-wrap">
+    <div class="search-title"><i class="fa-solid fa-magnifying-glass" style="margin-right:8px;"></i>Search Lost & Found Items</div>
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search by item name, location…">
+      <select id="categoryFilter">
+        <option value="All">All Categories</option>
+        <option value="Wallet">Wallet</option>
+        <option value="Phone">Phone</option>
+        <option value="Keys">Keys</option>
+        <option value="Pet">Pet</option>
+        <option value="Documents">Documents</option>
+        <option value="Bag">Bag</option>
+        <option value="Jewelry">Jewelry</option>
+      </select>
+      <button class="search-btn" onclick="searchItems()"><i class="fa-solid fa-search" style="margin-right:6px;"></i>Search</button>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYTICS -->
+<section id="analytics" class="analytics">
+  <div class="section-head">
+    <div class="section-label">Live Data</div>
+    <h2>Trust Analytics</h2>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><h3 id="reported">0</h3><p>Total Reports</p></div>
+    <div class="stat-card"><h3 id="reunited">0</h3><p>Items Reunited</p></div>
+    <div class="stat-card"><h3 id="rating">0%</h3><p>Community Honesty Rating</p></div>
+  </div>
+  <div class="testimonial" id="testimonial">❤️ I got my wallet back within one day. TrustFind is incredible!</div>
+</section>
+
+<!-- RECENT REPORTS -->
+<section id="reports" class="reports-section">
+  <div class="section-head">
+    <div class="section-label">Latest Activity</div>
+    <h2>Recent Reports</h2>
+  </div>
+  <div class="report-grid">
+    <div class="report-card">
+      <div class="report-card-img">
+        <span class="tag tag-lost">Lost</span>
+        <img src="https://images.unsplash.com/photo-1627843563095-f6e94676cfe0?w=600&auto=format&fit=crop&q=80" alt="Black Wallet">
+      </div>
+      <div class="report-body">
+        <h3>Black Leather Wallet</h3>
+        <p>📍 Downtown Area &nbsp;·&nbsp; 📅 May 25, 2026</p>
+      </div>
+    </div>
+    <div class="report-card">
+      <div class="report-card-img">
+        <span class="tag tag-lost">Lost</span>
+        <img src="https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=600&auto=format&fit=crop&q=80" alt="Smart Phone">
+      </div>
+      <div class="report-body">
+        <h3>iPhone 15 Pro (Black)</h3>
+        <p>📍 City Mall &nbsp;·&nbsp; 📅 May 22, 2026</p>
+      </div>
+    </div>
+    <div class="report-card">
+      <div class="report-card-img">
+        <span class="tag tag-found">Found</span>
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=80" alt="Car Keys">
+      </div>
+      <div class="report-body">
+        <h3>Car Keys (Toyota)</h3>
+        <p>📍 Railway Station &nbsp;·&nbsp; 📅 May 20, 2026</p>
+      </div>
+    </div>
+    <div class="report-card">
+      <div class="report-card-img">
+        <span class="tag tag-found">Found</span>
+        <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&auto=format&fit=crop&q=80" alt="Pet Dog">
+      </div>
+      <div class="report-body">
+        <h3>Golden Retriever Dog</h3>
+        <p>📍 Green Park &nbsp;·&nbsp; 📅 May 18, 2026</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT FORM -->
+<section id="reportForm" class="form-section">
+  <div class="section-head">
+    <div class="section-label">Take Action</div>
+    <h2>Report an Item</h2>
+  </div>
+  <div class="form-wrap">
+    <div class="trust-banner">❤️ Built on honesty and community trust — every report matters</div>
+    <form id="lostFoundForm">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Item Name</label>
+          <input type="text" placeholder="e.g. Black Leather Wallet" required>
+        </div>
+        <div class="form-field">
+          <label>Category</label>
+          <select required>
+            <option value="">Select Category</option>
+            <option>Wallet</option><option>Phone</option><option>Keys</option>
+            <option>Pet</option><option>Documents</option><option>Bag</option><option>Jewelry</option>
+          </select>
+        </div>
+        <div class="form-field full">
+          <label>Status</label>
+          <div class="radio-group">
+            <label><input type="radio" name="status" value="Lost" checked> 🔴 Lost</label>
+            <label><input type="radio" name="status" value="Found"> 🟢 Found</label>
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Location</label>
+          <input type="text" placeholder="Where was it lost / found?" required>
+        </div>
+        <div class="form-field">
+          <label>Date</label>
+          <input type="date" required>
+        </div>
+        <div class="form-field full">
+          <label>Description</label>
+          <textarea rows="4" placeholder="Describe the item in detail — color, brand, distinguishing features…" required></textarea>
+        </div>
+        <div class="form-field full">
+          <label>Upload Image</label>
+          <div class="upload-area" onclick="document.getElementById('imageUpload').click()">
+            <i class="fa-regular fa-image"></i>
+            <p>Click to upload a photo of the item</p>
+            <p style="font-size:.8rem;margin-top:6px;color:rgba(232,244,240,.25);">PNG, JPG up to 10MB</p>
+          </div>
+          <input type="file" id="imageUpload" accept="image/*">
+          <img id="previewImage" src="" alt="">
+        </div>
+      </div>
+      <button type="submit" class="submit-btn">Submit Report <i class="fa-solid fa-paper-plane" style="margin-left:8px;"></i></button>
+    </form>
+  </div>
+</section>
+
+<!-- ITEMS BOARD -->
+<section id="board" class="board-section">
+  <div class="section-head">
+    <div class="section-label">Community</div>
+    <h2>Items Board</h2>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterItems('All',this)">All Items</button>
+    <button class="filter-btn" onclick="filterItems('Lost',this)">Lost</button>
+    <button class="filter-btn" onclick="filterItems('Found',this)">Found</button>
+  </div>
+  <div class="board-layout">
+    <div id="itemsContainer" class="items-grid"></div>
+    <div class="map-card">
+      <h3><i class="fa-solid fa-map" style="color:var(--g1);margin-right:8px;"></i>Item Location Map</h3>
+      <div class="map-inner">
+        <div class="map-dot"></div>
+        <div class="map-dot"></div>
+        <div class="map-dot"></div>
+        <div class="map-dot"></div>
+        <i class="fa-solid fa-location-dot"></i>
+        <p>Interactive map showing reported item locations</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY TRUSTFIND -->
+<section class="why-section">
+  <div class="section-head">
+    <div class="section-label">Why Us</div>
+    <h2>Why TrustFind?</h2>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon"><i class="fa-solid fa-users"></i></div>
+      <h3>Community Driven</h3>
+      <p>Real people helping real people recover lost belongings. Every report strengthens our network.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <h3>Safe & Secure</h3>
+      <p>Verified reporting with privacy-first design. Your personal details are never exposed publicly.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon"><i class="fa-solid fa-handshake"></i></div>
+      <h3>Trust Network</h3>
+      <p>Our honesty rating system encourages kindness and accountability across every community.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon"><i class="fa-solid fa-bolt"></i></div>
+      <h3>Instant Alerts</h3>
+      <p>Get notified the moment someone reports an item matching your description in your area.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><i class="fa-solid fa-shield-heart" style="-webkit-text-fill-color:var(--g1);margin-right:8px;"></i>TrustFind</div>
+  <p>Community Powered Lost &amp; Found Platform</p>
+  <div class="footer-socials">
+    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+    <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+  </div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a><a href="#">Terms of Use</a>
+    <a href="#">Contact</a><a href="#">FAQ</a><a href="#">Blog</a>
+  </div>
+  <p class="copyright">© 2026 TrustFind. All Rights Reserved.</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Report submitted successfully!</div>
+
+<script>
+/* ── DATA ─────────────────────────────────────── */
+const items = [
+  {title:"Black Leather Wallet",status:"Lost",category:"Wallet",location:"Downtown Area",date:"2026-05-25",image:"https://images.unsplash.com/photo-1627843563095-f6e94676cfe0?w=400&auto=format&fit=crop&q=80"},
+  {title:"iPhone 15 Pro",status:"Lost",category:"Phone",location:"City Mall",date:"2026-05-22",image:"https://images.unsplash.com/photo-1512054502232-10a0a035d672?w=400&auto=format&fit=crop&q=80"},
+  {title:"Toyota Car Keys",status:"Found",category:"Keys",location:"Railway Station",date:"2026-05-20",image:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop&q=80"},
+  {title:"Golden Retriever",status:"Found",category:"Pet",location:"Green Park",date:"2026-05-18",image:"https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&auto=format&fit=crop&q=80"},
+  {title:"Brown Backpack",status:"Lost",category:"Bag",location:"Central Library",date:"2026-05-16",image:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&auto=format&fit=crop&q=80"},
+  {title:"Passport & Documents",status:"Found",category:"Documents",location:"Airport Terminal 2",date:"2026-05-14",image:"https://images.unsplash.com/photo-1575783970733-1aaedde1db74?w=400&auto=format&fit=crop&q=80"},
+];
+
+/* ── RENDER ─────────────────────────────────────── */
+function renderItems(data){
+  const c=document.getElementById("itemsContainer");
+  if(!c)return;
+  c.innerHTML = data.length ? data.map(item=>`
+    <div class="item-card">
+      <div class="item-card-img"><img src="${item.image}" alt="${item.title}" loading="lazy"></div>
+      <div class="item-body">
+        <span class="${item.status==="Lost"?"s-lost":"s-found"}">${item.status}</span>
+        <h3>${item.title}</h3>
+        <p>📍 ${item.location}</p>
+        <p>📅 ${item.date}</p>
+        <button class="claim-btn" onclick="showToast('Contact request sent!')">Claim / Contact</button>
+      </div>
+    </div>`).join("") :
+    `<div style="grid-column:1/-1;text-align:center;padding:60px;color:rgba(232,244,240,.3);">
+      <i class="fa-solid fa-box-open" style="font-size:3rem;margin-bottom:16px;display:block;"></i>
+      No items found matching your search.
+    </div>`;
+}
+renderItems(items);
+
+/* ── FILTER ─────────────────────────────────────── */
+function filterItems(type,btn){
+  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+  if(btn)btn.classList.add("active");
+  renderItems(type==="All"?items:items.filter(i=>i.status===type));
+}
+
+/* ── SEARCH ─────────────────────────────────────── */
+function searchItems(){
+  const text=document.getElementById("searchInput").value.toLowerCase();
+  const cat=document.getElementById("categoryFilter").value;
+  renderItems(items.filter(i=>{
+    return i.title.toLowerCase().includes(text)&&(cat==="All"||i.category===cat);
+  }));
+  document.getElementById("board").scrollIntoView({behavior:"smooth"});
+}
+document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchItems();});
+
+/* ── COUNTERS ────────────────────────────────────── */
+function animateCounter(id,target,suffix=""){
+  let c=0;const speed=Math.ceil(target/80);
+  const t=setInterval(()=>{
+    c=Math.min(c+speed,target);
+    document.getElementById(id).innerText=c.toLocaleString()+suffix;
+    if(c>=target)clearInterval(t);
+  },18);
+}
+const obs=new IntersectionObserver(e=>{
+  if(e[0].isIntersecting){animateCounter("reported",1200);animateCounter("reunited",980);animateCounter("rating",95,"%");obs.disconnect();}
+},{threshold:.3});
+obs.observe(document.querySelector(".analytics"));
+
+/* ── TESTIMONIALS ────────────────────────────────── */
+const testimonials=["❤️ I got my wallet back within one day. Truly amazing community!","😊 TrustFind helped me recover my lost phone from the mall.","🐶 My pet dog was safely reunited with us thanks to TrustFind.","🎒 Someone returned my backpack with everything inside. Incredible trust.","📄 Got my important documents back at the airport. Lifesaver!"];
+let tIdx=0;
+function cycleTesti(){
+  const el=document.getElementById("testimonial");
+  el.style.opacity="0";
+  setTimeout(()=>{tIdx=(tIdx+1)%testimonials.length;el.innerText=testimonials[tIdx];el.style.opacity="1";},500);
+}
+setInterval(cycleTesti,3500);
+
+/* ── IMAGE PREVIEW ───────────────────────────────── */
+document.getElementById("imageUpload").addEventListener("change",function(){
+  const f=this.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{const p=document.getElementById("previewImage");p.src=e.target.result;p.style.display="block";};
+  r.readAsDataURL(f);
+});
+
+/* ── FORM SUBMIT ─────────────────────────────────── */
+document.getElementById("lostFoundForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  showToast("✅ Report submitted successfully!");
+  this.reset();
+  const p=document.getElementById("previewImage");p.style.display="none";
+});
+
+/* ── TOAST ───────────────────────────────────────── */
+function showToast(msg="Done!"){
+  const t=document.getElementById("toast");
+  t.innerText=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3200);
+}
+
+/* ── SCROLL FADE IN ──────────────────────────────── */
+const fadeEls=document.querySelectorAll(".stat-card,.report-card,.why-card,.item-card");
+const fadeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity="1";e.target.style.transform="translateY(0)";}});
+},{threshold:.1});
+fadeEls.forEach(el=>{el.style.opacity="0";el.style.transform="translateY(30px)";el.style.transition="opacity .6s ease, transform .6s ease";fadeObs.observe(el);});
+</script>
+</body>
+</html>
